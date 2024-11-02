@@ -1,0 +1,14 @@
+package resources;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
+
+import model.vo.ClienteVO;
+
+@Path("/cliente")
+public class ClienteResource {
+	private ClienteVO cliente = new ClienteVO(0, null, null, null, null, 0, null, 0, 0, 0, null, null);
+	
+
+}
