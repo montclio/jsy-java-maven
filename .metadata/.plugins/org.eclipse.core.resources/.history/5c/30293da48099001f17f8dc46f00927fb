@@ -1,0 +1,18 @@
+package resources;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
+import model.vo.ClienteVO;
+
+@Path("/cliente")
+public class ClienteResource {
+	
+	@GET
+	@Path("/hello")
+	public Response  helloWorld() {
+		return Response.ok("Hello World").build();
+	}
+}

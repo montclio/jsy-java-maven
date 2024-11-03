@@ -5,20 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import connection.Conexao;
+import connection.ConexaoFactory;
 import model.vo.AutopecasVO;
 
 public class AutopecasDAO {
 
+    private Connection conexao;
+
+    public AutopecasDAO() throws ClassNotFoundException, SQLException {
+        this.conexao = new ConexaoFactory().conexaoBD();
+    }
+
     // Método para cadastrar Autopecas
     public int cadastrarAutopecas(AutopecasVO autopeca) {
-        Connection conexao = null;
         int idAutopecaGerado = -1;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
-
             String sql = "INSERT INTO TB_JSY_AUTOPECAS (nome_fantasia, cnpj, endereco, email, telefone, senha, frete) "
                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -44,13 +46,13 @@ public class AutopecasDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao cadastrar autopeças: " + e.getMessage(), e);
         } finally {
-            try {
-                if (conexao != null) {
-                    conexao.close();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
-            }
+        	try {
+	            if (this.conexao != null) {
+	                this.conexao.close();
+	            }
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	        }
         }
 
         return idAutopecaGerado;
@@ -58,17 +60,13 @@ public class AutopecasDAO {
 
     // Método para consultar Autopecas por ID
     public AutopecasVO consultarAutopecasPorId(int idAutopeca) {
-        Connection conexao = null;
         AutopecasVO autopeca = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
-
             String sql = "SELECT id_autopeca, nome_fantasia, cnpj, endereco, email, telefone, senha, frete "
                        + "FROM TB_JSY_AUTOPECAS WHERE id_autopeca = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setInt(1, idAutopeca);
 
             ResultSet rs = stmt.executeQuery();
@@ -92,13 +90,13 @@ public class AutopecasDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao consultar autopeças: " + e.getMessage(), e);
         } finally {
-            try {
-                if (conexao != null) {
-                    conexao.close();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
-            }
+        	try {
+	            if (this.conexao != null) {
+	                this.conexao.close();
+	            }
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	        }
         }
 
         return autopeca;
@@ -106,12 +104,7 @@ public class AutopecasDAO {
 
     // Método para atualizar Autopecas
     public void atualizarAutopecas(AutopecasVO autopeca) {
-        Connection conexao = null;
-
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
-
             String sql = "UPDATE TB_JSY_AUTOPECAS SET nome_fantasia = ?, cnpj = ?, endereco = ?, email = ?, telefone = ?, senha = ?, frete = ? "
                        + "WHERE id_autopeca = ?";
 
@@ -131,24 +124,19 @@ public class AutopecasDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar autopeças: " + e.getMessage(), e);
         } finally {
-            try {
-                if (conexao != null) {
-                    conexao.close();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
-            }
+        	try {
+	            if (this.conexao != null) {
+	                this.conexao.close();
+	            }
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	        }
         }
     }
 
     // Método para excluir Autopecas
     public void excluirAutopecas(int idAutopeca) {
-        Connection conexao = null;
-
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
-
             String sql = "DELETE FROM TB_JSY_AUTOPECAS WHERE id_autopeca = ?";
 
             PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -160,13 +148,13 @@ public class AutopecasDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao excluir autopeças: " + e.getMessage(), e);
         } finally {
-            try {
-                if (conexao != null) {
-                    conexao.close();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
-            }
+        	try {
+	            if (this.conexao != null) {
+	                this.conexao.close();
+	            }
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	        }
         }
     }
 

@@ -5,24 +5,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import connection.Conexao;
+import connection.ConexaoFactory;
 import model.vo.PecaVO;
 
 public class PecaDAO {
+	private Connection conexao;
+
+    public PecaDAO() throws ClassNotFoundException, SQLException {
+        this.conexao = new ConexaoFactory().conexaoBD();
+    }
+
 
     // Método para cadastrar uma peça no banco de dados
     public int cadastrarPeca(PecaVO peca) {
-        Connection conexao = null;
         int idPecaGerado = -1;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
+
 
             String sql = "INSERT INTO TB_JSY_PECA (tipo_peca, nome_peca, fabricante_peca, modelo_peca) "
                        + "VALUES (?, ?, ?, ?)";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, peca.getTipoPeca());
             stmt.setString(2, peca.getNomePeca());
             stmt.setString(3, peca.getFabricantePeca());
@@ -42,8 +46,8 @@ public class PecaDAO {
             throw new RuntimeException("Erro ao cadastrar peça: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -55,17 +59,14 @@ public class PecaDAO {
 
     // Método para consultar uma peça por ID
     public PecaVO consultarPeca(int idPeca) {
-        Connection conexao = null;
         PecaVO peca = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "SELECT id_peca, tipo_peca, nome_peca, fabricante_peca, modelo_peca "
                        + "FROM TB_JSY_PECA WHERE id_peca = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setInt(1, idPeca);
 
             ResultSet rs = stmt.executeQuery();
@@ -89,8 +90,8 @@ public class PecaDAO {
             throw new RuntimeException("Erro ao consultar peça: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -102,11 +103,8 @@ public class PecaDAO {
 
     // Método para atualizar uma peça
     public void atualizarPeca(PecaVO peca) {
-        Connection conexao = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "UPDATE TB_JSY_PECA SET tipo_peca = ?, nome_peca = ?, fabricante_peca = ?, modelo_peca = ? "
                        + "WHERE id_peca = ?";
@@ -126,8 +124,8 @@ public class PecaDAO {
             throw new RuntimeException("Erro ao atualizar peça: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -137,15 +135,12 @@ public class PecaDAO {
 
     // Método para excluir uma peça por ID
     public void excluirPeca(int idPeca) {
-        Connection conexao = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "DELETE FROM TB_JSY_PECA WHERE id_peca = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setInt(1, idPeca);
 
             stmt.executeUpdate();
@@ -156,8 +151,8 @@ public class PecaDAO {
             throw new RuntimeException("Erro ao excluir peça: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);

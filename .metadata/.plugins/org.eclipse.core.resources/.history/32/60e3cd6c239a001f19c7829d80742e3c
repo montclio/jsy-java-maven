@@ -1,0 +1,154 @@
+package model.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import connection.ConexaoFactory;
+import model.vo.PecaVO;
+import model.vo.ServicoVO;
+
+public class ServicoDAO {
+	
+	private Connection conexao;
+
+    public ServicoDAO() throws ClassNotFoundException, SQLException {
+        this.conexao = new ConexaoFactory().conexaoBD();
+    }
+
+	public int cadastrarServico(ServicoVO servico) {
+		int idServicoGerado = -1;
+		
+		try {
+
+            String sql = "INSERT INTO TB_JSY_SERVICO (id_servico, desc_servico, preco_mao_obra) "
+                       + "VALUES (?, ?, ?)";
+
+            PreparedStatement stmt = this.conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, servico.getDescServico());
+            stmt.setDouble(2, servico.getPrecoMaoObra());
+
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+            	idServicoGerado = rs.getInt(1); 
+
+            rs.close();
+            stmt.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao o serviço peça: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (this.conexao != null) {
+                	this.conexao.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+            }
+        }
+
+        return idServicoGerado;
+    }
+	
+	 public ServicoVO consultarServico(int idServico) {
+	        ServicoVO servico = null;
+
+	        try {
+	            String sql = "SELECT * "
+	                       + "FROM TB_JSY_SERVICO WHERE id_servico = ?";
+
+	            PreparedStatement stmt = this.conexao.prepareStatement(sql);
+	            stmt.setInt(1, idServico);
+
+	            ResultSet rs = stmt.executeQuery();
+
+	            if (rs.next()) {
+	            	servico = new ServicoVO(
+	                    rs.getInt("id_servico"),
+	                    rs.getString("desc_servico"),
+	                    rs.getDouble("preco_mao_obra")
+	                );
+	            }
+
+	            rs.close();
+	            stmt.close();
+
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao consultar serviço: " + e.getMessage(), e);
+	        } finally {
+	            try {
+	                if (this.conexao != null) {
+	                	this.conexao.close();
+	                }
+	            } catch (SQLException e) {
+	                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	            }
+	        }
+
+	        return servico;
+	    }
+	 
+	 public void atualizarServico(ServicoVO servico) {
+
+	        try {
+
+	            String sql = "UPDATE TB_JSY_SERVICO SET tipo_peca = ?, nome_peca = ?, fabricante_peca = ?, modelo_peca = ? "
+	                       + "WHERE id_peca = ?";
+
+	            PreparedStatement stmt = conexao.prepareStatement(sql);
+	            stmt.setString(1, servico.getTipoPeca());
+	            stmt.setString(2, servico.getNomePeca());
+	            stmt.setString(3, servico.getFabricantePeca());
+	            stmt.setString(4, servico.getModelo());
+	            stmt.setInt(5, servico.getIdPeca());
+
+	            stmt.executeUpdate();
+
+	            stmt.close();
+
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao atualizar peça: " + e.getMessage(), e);
+	        } finally {
+	            try {
+	                if (this.conexao != null) {
+	                	this.conexao.close();
+	                }
+	            } catch (SQLException e) {
+	                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	            }
+	        }
+	    }
+
+	    // Método para excluir uma peça por ID
+	    public void excluirServico(int idPeca) {
+
+	        try {
+
+	            String sql = "DELETE FROM TB_JSY_PECA WHERE id_peca = ?";
+
+	            PreparedStatement stmt = this.conexao.prepareStatement(sql);
+	            stmt.setInt(1, idPeca);
+
+	            stmt.executeUpdate();
+
+	            stmt.close();
+
+	        } catch (SQLException e) {
+	            throw new RuntimeException("Erro ao excluir peça: " + e.getMessage(), e);
+	        } finally {
+	            try {
+	                if (this.conexao != null) {
+	                	this.conexao.close();
+	                }
+	            } catch (SQLException e) {
+	                throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
+	            }
+	        }
+	    }
+	    
+	    
+
+}

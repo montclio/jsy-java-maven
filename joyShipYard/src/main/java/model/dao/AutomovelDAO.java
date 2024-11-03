@@ -6,24 +6,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import connection.Conexao;
+import connection.ConexaoFactory;
 import model.vo.AutomovelVO;
 
 public class AutomovelDAO {
+    public Connection conexao;
+
+    public AutomovelDAO() throws ClassNotFoundException, SQLException {
+        super();
+        this.conexao = new ConexaoFactory().conexaoBD();
+    }
 
     // Método para cadastrar automóvel no banco de dados
     public int cadastrarAutomovel(AutomovelVO automovel) {
-        Connection conexao = null;
         int idAutomovelGerado = -1;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
-
             String sql = "INSERT INTO TB_JSY_AUTOMOVEL (cor, crvl, modelo, fabricante, placa, assegurado, quilometragem, ano_circulacao, ano_fabricacao) "
                        + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, automovel.getCor());
             stmt.setInt(2, automovel.getCrvl());
             stmt.setString(3, automovel.getModelo());
@@ -48,8 +50,8 @@ public class AutomovelDAO {
             throw new RuntimeException("Erro ao cadastrar automóvel: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                    this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -61,17 +63,14 @@ public class AutomovelDAO {
 
     // Método para consultar um automóvel por ID
     public AutomovelVO consultarAutomovelPorId(int idAutomovel) {
-        Connection conexao = null;
         AutomovelVO automovel = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "SELECT id_automovel, cor, crvl, modelo, fabricante, placa, assegurado, quilometragem, ano_circulacao, ano_fabricacao "
                        + "FROM TB_JSY_AUTOMOVEL WHERE id_automovel = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setInt(1, idAutomovel);
 
             ResultSet rs = stmt.executeQuery();
@@ -98,8 +97,8 @@ public class AutomovelDAO {
             throw new RuntimeException("Erro ao consultar automóvel: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -111,16 +110,13 @@ public class AutomovelDAO {
 
     // Método para atualizar um automóvel no banco de dados
     public void atualizarAutomovel(AutomovelVO automovel) {
-        Connection conexao = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "UPDATE TB_JSY_AUTOMOVEL SET cor = ?, crvl = ?, modelo = ?, fabricante = ?, placa = ?, assegurado = ?, quilometragem = ?, ano_circulacao = ?, ano_fabricacao = ? "
                        + "WHERE id_automovel = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setString(1, automovel.getCor());
             stmt.setInt(2, automovel.getCrvl());
             stmt.setString(3, automovel.getModelo());
@@ -133,15 +129,14 @@ public class AutomovelDAO {
             stmt.setInt(10, automovel.getIdAutomovel());
 
             stmt.executeUpdate();
-
             stmt.close();
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar automóvel: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);
@@ -151,27 +146,23 @@ public class AutomovelDAO {
 
     // Método para excluir um automóvel por ID
     public void excluirAutomovel(int idAutomovel) {
-        Connection conexao = null;
 
         try {
-            Conexao conexaoDB = new Conexao();
-            conexao = conexaoDB.getConn();
 
             String sql = "DELETE FROM TB_JSY_AUTOMOVEL WHERE id_automovel = ?";
 
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            PreparedStatement stmt = this.conexao.prepareStatement(sql);
             stmt.setInt(1, idAutomovel);
 
             stmt.executeUpdate();
-
             stmt.close();
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao excluir automóvel: " + e.getMessage(), e);
         } finally {
             try {
-                if (conexao != null) {
-                    conexao.close();
+                if (this.conexao != null) {
+                	this.conexao.close();
                 }
             } catch (SQLException e) {
                 throw new RuntimeException("Erro ao fechar conexão: " + e.getMessage(), e);

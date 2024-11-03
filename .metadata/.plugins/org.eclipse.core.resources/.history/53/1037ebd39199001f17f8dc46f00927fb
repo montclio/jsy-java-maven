@@ -1,0 +1,27 @@
+package connection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import oracle.jdbc.pool.OracleDataSource;
+
+public class ConexaoFactory {
+    private static OracleDataSource dataSource;
+
+    static {
+        try {
+            dataSource = new OracleDataSource();
+            dataSource.setURL("jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl");
+            dataSource.setUser("rm557541");
+            dataSource.setPassword("190800");
+            dataSource.setConnectionCachingEnabled(true); // Ativa o cache para pooling básico
+            dataSource.setConnectionCacheProperties(new java.util.Properties());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao configurar o DataSource", e);
+        }
+    }
+
+    public static Connection getConexao() throws SQLException {
+        return dataSource.getConnection();
+    }
+}

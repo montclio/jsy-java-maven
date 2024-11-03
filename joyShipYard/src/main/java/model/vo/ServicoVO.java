@@ -1,5 +1,7 @@
 package model.vo;
 
+import org.glassfish.jersey.model.internal.ManagedObjectsFinalizer;
+
 public class ServicoVO {
 	private int idServico;
 	private String descServico;
